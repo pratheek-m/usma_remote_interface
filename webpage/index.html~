@@ -37,7 +37,6 @@ function init(){
     viewer = new MJPEGCANVAS.Viewer({
       divID : 'mjpeg',
       host : '192.168.200.75', 
-      // port : 8181
       width : 640,
       height : 480,
       topic : '/usb_cam/image_raw'
