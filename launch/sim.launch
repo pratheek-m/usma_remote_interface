@@ -1,0 +1,7 @@
+<launch>
+
+  <include file="$(find p2os_urdf)/launch/pioneer3dx_urdf.launch"/>
+
+  <node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" args="-d $(find aribo)/launch/aribo.rviz"/>
+
+</launch>
