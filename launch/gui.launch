@@ -3,6 +3,9 @@
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
   <node pkg="mjpeg_server" type="mjpeg_server" name="mjpeg_server" />
 
+
+  <include file="$(find rosaria)/launch/pioneer_robot.launch"/>
+
   <rosparam command="load" file="$(find aribo)/config/pioneer.yaml" />
 
   <node pkg="aribo" type="velocityControl.py" name="velocityControl">

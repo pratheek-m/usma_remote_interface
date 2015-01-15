@@ -36,7 +36,7 @@ function init(){
     // Create the main viewer.
     viewer = new MJPEGCANVAS.Viewer({
       divID : 'mjpeg',
-      host : '192.168.200.75', 
+      host : 'dasl.mem.drexel.edu', 
       width : 640,
       height : 480,
       topic : '/usb_cam/image_raw'
@@ -60,7 +60,7 @@ function init(){
 }
   var state = "teleop";
   var ros = new ROSLIB.Ros({
-    url : 'ws://192.168.200.75:9090'
+    url : 'ws://dasl.mem.drexel.edu:9090'
   });
 
   ros.on('connection', function() {
@@ -88,12 +88,19 @@ function init(){
   {
 	stateMachine.publish(new ROSLIB.Message({'data':curState}));
   }
-
   var cmdVel = new ROSLIB.Topic({
     ros : ros,
     name : '/teleop',
     messageType : 'geometry_msgs/Twist'
   });
+
+  var cmdCamera = new ROSLIB.Topic({
+    ros : ros,
+    name : '/teleopCam',
+    messageType : 'geometry_msgs/Twist'
+  });
+
+
 
   var twist = new ROSLIB.Message({
     linear : {
@@ -107,24 +114,44 @@ function init(){
       z : 0
     }
   });
-
+  cmdCamera.publish(twist);
   cmdVel.publish(twist);
-
-  function twistPublish(lx,ly,lz,ax,ay,az)
+  function twistPublish(dx,dy,bx,by)
   {
-   twist = new ROSLIB.Message({
-    linear : {
-      x : lx,
-      y : ly,
-      z : lz
-    },
-    angular : {
-      x : ax,
-      y : ay,
-      z : az
+   if (bx<document.getElementById("wd").offsetWidth/2)
+    {
+	   twist = new ROSLIB.Message({
+	    linear : {
+	      x : dy,
+	      y : 0,
+	      z : 0
+	    },
+	    angular : {
+	      x : 0,
+	      y : 0,
+	      z : dx
+	    }
+	    });
+ 
+        cmdVel.publish(twist);
     }
-    });
-    cmdVel.publish(twist);
+    else
+    {
+	   twist = new ROSLIB.Message({
+	    linear : {
+	      x : 0,
+	      y : 0,
+	      z : 0
+	    },
+	    angular : {
+	      x : dy,
+	      y : 0,
+	      z : dx
+	    }
+	    });
+ 
+	cmdCamera.publish(twist);
+    }
   }
 
 window.onresize = function(event) {
@@ -235,7 +262,6 @@ function generateSizes(){
 	generateSizes();
 	statePublish(state);
   }
-
 </script>
 
 	</head>
@@ -290,7 +316,7 @@ function generateSizes(){
 		})
 
 		setInterval(function(){
-			twistPublish(joystick.deltaY(),0,0,0,0,joystick.deltaX());
+			twistPublish(joystick.deltaX(),joystick.deltaY(),joystick._baseX,joystick._baseY);
 		}, 1/10 * 1000);
 		}
 
