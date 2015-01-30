@@ -15,7 +15,7 @@
     <script type="text/javascript" type="text/javascript">
   var state = "teleop";
   var ros = new ROSLIB.Ros({
-    url : 'ws://192.168.200.203:9090'
+    url : 'ws://dasl.mem.drexel.edu:9090'
   });
 
   ros.on('connection', function() {
@@ -96,6 +96,28 @@
 	cmdCamera.publish(twist);
     }
   }
+
+
+  var listener = new ROSLIB.Topic({
+    ros : ros,
+    name : '/temperature',
+    messageType : 'std_msgs/Float64'
+  });
+
+  listener.subscribe(function(message) {
+    console.log('Received message on ' + listener.name + ': ' + Math.round(message.data));
+    temp = document.getElementById("TEMP");
+    if(message.data>120){
+	temp.className="danger";
+    } else if(message.data>50) {
+	temp.className="warning";
+    } else {
+	temp.className="safe";
+    }
+    temp = temp.children[0];
+    temp.innerHTML=Math.round(message.data)+" F";
+    
+  });
 
 window.onresize = function(event) {
 	generateHTML();
@@ -273,9 +295,15 @@ function init(){
                 <li class="active"><a href="#lA" data-toggle="tab" onclick="loadTeleop()">Tele-op</a></li>
                 <li class=""><a href="#lA" data-toggle="tab" onclick="load2D()">2D Nav</a></li>
                 <li class=""><a href="#lA" data-toggle="tab" onclick="loadExplore()">Explore</a></li>
-		<li class="safe"><a href="#lA" data-toggle="tab" onclick="loadMethane()">Methane</a></li>
-		<li class="danger"><a href="#lA" data-toggle="tab" onclick="loadCO2()">CO2</a></li>
-		<li class="warning"><a href="#lA" data-toggle="tab" onclick="loadCO()">CO</a></li>
+		<li class="">&nbsp </li>
+		<li class="">&nbsp </li>
+		<li id="methane" class="safe"><a href="#lA" data-toggle="tab" onclick="loadMethane()">Methane</a></li>
+		<li class="">&nbsp </li>
+		<li id="CO2" class="danger"><a href="#lA" data-toggle="tab" onclick="loadCO2()">CO2</a></li>
+		<li class="">&nbsp </li>
+		<li id="CO" class="warning"><a href="#lA" data-toggle="tab" onclick="loadCO()">CO</a></li>
+		<li class="">&nbsp </li>
+		<li id="TEMP" class="safe" hspace="10"><a href="#lA" data-toggle="tab" onclick="loadTemp()">Temp</a></li>
               </ul>
 
             </div>
