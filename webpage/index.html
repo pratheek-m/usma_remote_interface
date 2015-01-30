@@ -233,7 +233,10 @@ function generateSizes(){
 	generateSizes();
 	statePublish(state);
   }
-
+  function loadData(name)
+  {
+	if(state=="teleop"){destroyJoy();}
+  }
 
 
 function init(){
@@ -297,13 +300,13 @@ function init(){
                 <li class=""><a href="#lA" data-toggle="tab" onclick="loadExplore()">Explore</a></li>
 		<li class="">&nbsp </li>
 		<li class="">&nbsp </li>
-		<li id="methane" class="safe"><a href="#lA" data-toggle="tab" onclick="loadMethane()">Methane</a></li>
+		<li id="methane" class="safe"><a href="#lA" data-toggle="tab" onclick="loadData('Methane')">Methane</a></li>
 		<li class="">&nbsp </li>
-		<li id="CO2" class="danger"><a href="#lA" data-toggle="tab" onclick="loadCO2()">CO2</a></li>
+		<li id="CO2" class="danger"><a href="#lA" data-toggle="tab" onclick="loadData('CO2')">CO2</a></li>
 		<li class="">&nbsp </li>
-		<li id="CO" class="warning"><a href="#lA" data-toggle="tab" onclick="loadCO()">CO</a></li>
+		<li id="CO" class="warning"><a href="#lA" data-toggle="tab" onclick="loadData('CO')">CO</a></li>
 		<li class="">&nbsp </li>
-		<li id="TEMP" class="safe" hspace="10"><a href="#lA" data-toggle="tab" onclick="loadTemp()">Temp</a></li>
+		<li id="TEMP" class="safe" hspace="10"><a href="#lA" data-toggle="tab" onclick="loadData('TEMP')">Temp</a></li>
               </ul>
 
             </div>
