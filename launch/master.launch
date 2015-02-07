@@ -22,5 +22,18 @@
     <param name="camera_frame_id" value="usb_cam" />
     <param name="io_method" value="mmap"/>
   </node>
+
+  <node name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
+    <!-- Starts up faster, but timestamps will be inaccurate. --> 
+    <param name="calibrate_time" type="bool" value="false"/> 
+    <!-- Set the port to connect to here -->
+    <param name="port" type="string" value="/dev/ttyACM0"/> 
+    <param name="intensity" type="bool" value="false"/>
+    <param name="frame_id" value="base_link"/>
+  </node>
+  
+  <node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" args="-d $(find aribo)/launch/master.rviz"/>
  
+  <include file="$(find p2os_urdf)/launch/pioneer3at_urdf.launch" />
+
 </launch>

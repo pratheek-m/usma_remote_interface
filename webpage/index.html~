@@ -2,62 +2,17 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		
-		<style>
-			#info {
-			position	: absolute;
-			top		: 0px;
-			width		: 100%;
-			padding		: 5px;
-			text-align	: center;
-		}
-		#container {
-			width		: 100%;
-			height		: 100%;
-			overflow	: hidden;
-			padding		: 0;
-			margin		: 0;
-			-webkit-user-select	: none;
-			-moz-user-select	: none;
-		}
-		</style>
-
-<script type="text/javascript" src="http://cdn.robotwebtools.org/EaselJS/current/easeljs.min.js"></script>
+		<script type="text/javascript" src="http://cdn.robotwebtools.org/EaselJS/current/easeljs.min.js"></script>
 <script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
 <script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
 <script type="text/javascript" src="http://cdn.robotwebtools.org/mjpegcanvasjs/current/mjpegcanvas.min.js"></script>
 <script type="text/javascript" src="http://cdn.robotwebtools.org/ros2djs/current/ros2d.min.js"></script>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
-<script type="text/javascript" type="text/javascript">
-  // Connecting to ROS
-  // -----------------
-function init(){
-    // Create the main viewer.
-    viewer = new MJPEGCANVAS.Viewer({
-      divID : 'mjpeg',
-      host : 'dasl.mem.drexel.edu', 
-      width : 640,
-      height : 480,
-      topic : '/usb_cam/image_raw'
-    });
 
-    mymap = new ROS2D.Viewer({
-      divID : 'map',
-      width : 0,
-      height : 0
-    });
+<link href="css/style.css" rel="stylesheet">
 
-    // Setup the map client.
-    var gridClient = new ROS2D.OccupancyGridClient({
-      ros : ros,
-      rootObject : map.scene
-    });
-    // Scale the canvas to fit to the map
-    gridClient.on('change', function(){
-      map.scaleToDimensions(gridClient.currentGrid.width, gridClient.currentGrid.height);
-    });
-}
+    <script type="text/javascript" type="text/javascript">
   var state = "teleop";
   var ros = new ROSLIB.Ros({
     url : 'ws://dasl.mem.drexel.edu:9090'
@@ -75,19 +30,21 @@ function init(){
     console.log('Connection to websocket server closed.');
   });
 
-  // Publishing a Topic
-  // ------------------
 
+  // state machine topic that we listen in on
   var stateMachine = new ROSLIB.Topic({
     ros : ros,
     name : '/robot_state',
     messageType : 'std_msgs/String'
   });
 
+  // publish call
   function statePublish(curState)
   {
 	stateMachine.publish(new ROSLIB.Message({'data':curState}));
   }
+
+  // command states that are listened in on
   var cmdVel = new ROSLIB.Topic({
     ros : ros,
     name : '/teleop',
@@ -101,21 +58,7 @@ function init(){
   });
 
 
-
-  var twist = new ROSLIB.Message({
-    linear : {
-      x : 0,
-      y : 0,
-      z : 0
-    },
-    angular : {
-      x : 0,
-      y : 0,
-      z : 0
-    }
-  });
-  cmdCamera.publish(twist);
-  cmdVel.publish(twist);
+  // splits the publish based on different window sides
   function twistPublish(dx,dy,bx,by)
   {
    if (bx<document.getElementById("wd").offsetWidth/2)
@@ -154,11 +97,36 @@ function init(){
     }
   }
 
+
+  var listener = new ROSLIB.Topic({
+    ros : ros,
+    name : '/temperature',
+    messageType : 'std_msgs/Float64'
+  });
+
+  listener.subscribe(function(message) {
+    console.log('Received message on ' + listener.name + ': ' + Math.round(message.data));
+    temp = document.getElementById("TEMP");
+    if(message.data>120){
+	temp.className="danger";
+    } else if(message.data>50) {
+	temp.className="warning";
+    } else {
+	temp.className="safe";
+    }
+    temp = temp.children[0];
+    temp.innerHTML=Math.round(message.data)+" F";
+    
+  });
+
 window.onresize = function(event) {
 	generateHTML();
 	generateSizes();
 }
 
+
+
+// regenerate html whenever something on the screen changes
 function generateHTML(){
         cont = document.getElementById("content").getElementsByTagName("td");
         width = document.getElementById("wd").offsetWidth;
@@ -191,7 +159,7 @@ function generateHTML(){
 		}
         }
 	}
-
+// regenerate the smaller elements whenever something changes
 function generateSizes(){
 	mapEle = document.getElementById("map").getElementsByTagName("canvas")[0];
 	width = document.getElementById("wd").offsetWidth;
@@ -238,6 +206,9 @@ function generateSizes(){
 		}
 	}
 }
+
+
+  // Functions to load assets
   function loadTeleop()
   {
 	loadJoy();
@@ -262,6 +233,56 @@ function generateSizes(){
 	generateSizes();
 	statePublish(state);
   }
+  function loadData(name)
+  {
+	if(state=="teleop"){destroyJoy();}
+  }
+
+
+function init(){
+    // Create the main viewer.
+    viewer = new MJPEGCANVAS.Viewer({
+      divID : 'mjpeg',
+      host : 'dasl.mem.drexel.edu', 
+      width : 640,
+      height : 480,
+      topic : '/usb_cam/image_raw'
+    });
+
+    mymap = new ROS2D.Viewer({
+      divID : 'map',
+      width : 0,
+      height : 0
+    });
+
+    // Setup the map client.
+    var gridClient = new ROS2D.OccupancyGridClient({
+      ros : ros,
+      rootObject : map.scene
+    });
+    // Scale the canvas to fit to the map
+    gridClient.on('change', function(){
+      map.scaleToDimensions(gridClient.currentGrid.width, gridClient.currentGrid.height);
+    });
+    var twist = new ROSLIB.Message({
+      linear : {
+        x : 0,
+        y : 0,
+        z : 0
+      },
+      angular : {
+        x : 0,
+        y : 0,
+        z : 0
+      }
+    });
+    cmdCamera.publish(twist);
+    cmdVel.publish(twist);
+
+
+}
+
+
 </script>
 
 	</head>
@@ -277,6 +298,15 @@ function generateSizes(){
                 <li class="active"><a href="#lA" data-toggle="tab" onclick="loadTeleop()">Tele-op</a></li>
                 <li class=""><a href="#lA" data-toggle="tab" onclick="load2D()">2D Nav</a></li>
                 <li class=""><a href="#lA" data-toggle="tab" onclick="loadExplore()">Explore</a></li>
+		<li class="">&nbsp </li>
+		<li class="">&nbsp </li>
+		<li id="methane" class="safe"><a href="#lA" data-toggle="tab" onclick="loadData('Methane')">Methane</a></li>
+		<li class="">&nbsp </li>
+		<li id="CO2" class="danger"><a href="#lA" data-toggle="tab" onclick="loadData('CO2')">CO2</a></li>
+		<li class="">&nbsp </li>
+		<li id="CO" class="warning"><a href="#lA" data-toggle="tab" onclick="loadData('CO')">CO</a></li>
+		<li class="">&nbsp </li>
+		<li id="TEMP" class="safe" hspace="10"><a href="#lA" data-toggle="tab" onclick="loadData('TEMP')">Temp</a></li>
               </ul>
 
             </div>

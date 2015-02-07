@@ -25,8 +25,14 @@ rostopic echo /scan
     <param name="port" type="string" value="/dev/ttyACM0"/> 
   
     <param name="intensity" type="bool" value="false"/>
+
+    <param name="frame_id" value="base_link"/>
+
   </node>
   
   <node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" args="-d $(find aribo)/launch/hokuyo_test.rviz"/>
-  
+
+  <!-- publish the static transform from the center of the robot to the laser rangefinder (required for slam_gmapping) -->
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0 0 0.1397 0 0 0 base_link laser 100" />
+
 </launch>

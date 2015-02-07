@@ -3,6 +3,10 @@
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
   <node pkg="mjpeg_server" type="mjpeg_server" name="mjpeg_server" />
 
+  <node name="RosAria" pkg="rosaria" type="RosAria">
+    <param name="port" value="/dev/ttyUSB0" />
+  </node>
+
   <rosparam command="load" file="$(find aribo)/config/pioneer.yaml" />
 
   <node pkg="aribo" type="velocityControl.py" name="velocityControl">
@@ -18,5 +22,21 @@
     <param name="camera_frame_id" value="usb_cam" />
     <param name="io_method" value="mmap"/>
   </node>
+
+  <node name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
+    <!-- Starts up faster, but timestamps will be inaccurate. --> 
+    <param name="calibrate_time" type="bool" value="false"/> 
+    <!-- Set the port to connect to here -->
+    <param name="port" type="string" value="/dev/ttyACM0"/> 
+    <param name="intensity" type="bool" value="false"/>
+    <param name="frame_id" value="base_link"/>
+  </node>
+  
+  <node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" args="-d $(find aribo)/launch/master.rviz"/>
+
+  <!-- publish the static transform from the center of the robot to the laser rangefinder (required for slam_gmapping)
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0 0 0.1397 0 0 0 base_link laser 100" /> -->
  
+  <include file="$(find p2os_urdf)/launch/pioneer3at_urdf.launch" />
+
 </launch>

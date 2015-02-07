@@ -27,6 +27,6 @@ rostopic echo /scan
     <param name="intensity" type="bool" value="false"/>
   </node>
   
-  <node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" args="-d $(find aribo)/hokuyo_test.rviz"/>
+  <node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" args="-d $(find aribo)/launch/hokuyo_test.rviz"/>
   
 </launch>
