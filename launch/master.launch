@@ -36,4 +36,6 @@
  
   <include file="$(find p2os_urdf)/launch/pioneer3at_urdf.launch" />
 
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0 0 0.1397 0 0 0 base_link laser 100" />
+
 </launch>

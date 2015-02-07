@@ -8,6 +8,7 @@ Panels:
         - /Status1
         - /LaserScan1
         - /TF1
+        - /TF1/Status1
       Splitter Ratio: 0.5
     Tree Height: 565
   - Class: rviz/Selection
@@ -90,23 +91,33 @@ Visualization Manager:
           Value: true
         front_sonar:
           Value: true
+        laser:
+          Value: true
         odom:
           Value: true
         p3at_back_left_axle:
           Value: true
         p3at_back_left_hub:
           Value: true
+        p3at_back_left_wheel:
+          Value: true
         p3at_back_right_axle:
           Value: true
         p3at_back_right_hub:
+          Value: true
+        p3at_back_right_wheel:
           Value: true
         p3at_front_left_axle:
           Value: true
         p3at_front_left_hub:
           Value: true
+        p3at_front_left_wheel:
+          Value: true
         p3at_front_right_axle:
           Value: true
         p3at_front_right_hub:
+          Value: true
+        p3at_front_right_wheel:
           Value: true
         top_plate:
           Value: true
@@ -122,18 +133,24 @@ Visualization Manager:
               {}
             front_sonar:
               {}
+            laser:
+              {}
             p3at_back_left_axle:
               p3at_back_left_hub:
-                {}
+                p3at_back_left_wheel:
+                  {}
             p3at_back_right_axle:
               p3at_back_right_hub:
-                {}
+                p3at_back_right_wheel:
+                  {}
             p3at_front_left_axle:
               p3at_front_left_hub:
-                {}
+                p3at_front_left_wheel:
+                  {}
             p3at_front_right_axle:
               p3at_front_right_hub:
-                {}
+                p3at_front_right_wheel:
+                  {}
             top_plate:
               {}
       Update Interval: 0
@@ -237,7 +254,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_link
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -258,22 +275,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.86974
+      Distance: 3.75824
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: 0.832831
+        Y: 0.231493
+        Z: 0.313509
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.0898007
+      Pitch: 0.519797
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.5804
+      Yaw: 2.51042
     Saved: ~
 Window Geometry:
   Displays:
@@ -291,5 +308,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 121
-  Y: 163
+  X: 90
+  Y: 359

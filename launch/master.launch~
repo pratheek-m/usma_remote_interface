@@ -33,9 +33,6 @@
   </node>
   
   <node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" args="-d $(find aribo)/launch/master.rviz"/>
-
-  <!-- publish the static transform from the center of the robot to the laser rangefinder (required for slam_gmapping)
-  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0 0 0.1397 0 0 0 base_link laser 100" /> -->
  
   <include file="$(find p2os_urdf)/launch/pioneer3at_urdf.launch" />
 
