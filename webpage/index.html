@@ -2,20 +2,22 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<script type="text/javascript" src="http://cdn.robotwebtools.org/EaselJS/current/easeljs.min.js"></script>
-<script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
-<script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-<script type="text/javascript" src="http://cdn.robotwebtools.org/mjpegcanvasjs/current/mjpegcanvas.min.js"></script>
-<script type="text/javascript" src="http://cdn.robotwebtools.org/ros2djs/current/ros2d.min.js"></script>
+<script type="text/javascript" src="javascript/easeljs.min.js"></script>
+<script type="text/javascript" src="javascript/eventemitter2.min.js"></script>
+<script type="text/javascript" src="javascript/roslib.min.js"></script>
+<script type="text/javascript" src="javascript/mjpegcanvas.min.js"></script>
+<script type="text/javascript" src="javascript/ros2d.min.js"></script>
+<script type="text/javascript" src="javascript/nav2d.js"></script>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
 <link href="css/style.css" rel="stylesheet">
 
     <script type="text/javascript" type="text/javascript">
+  var ip = '10.42.0.11';
   var state = "teleop";
   var ros = new ROSLIB.Ros({
-    url : 'ws://192.168.200.203:9090'
+    url : 'ws://'+ip+':9090'
   });
 
   ros.on('connection', function() {
@@ -30,19 +32,20 @@
     console.log('Connection to websocket server closed.');
   });
 
-
   // state machine topic that we listen in on
   var stateMachine = new ROSLIB.Topic({
     ros : ros,
     name : '/robot_state',
     messageType : 'std_msgs/String'
   });
-
   // publish call
   function statePublish(curState)
   {
-	stateMachine.publish(new ROSLIB.Message({'data':curState}));
+	next = new ROSLIB.Message({data:curState});
+	console.log(next);
+	stateMachine.publish(next);
   }
+
 
   // command states that are listened in on
   var cmdVel = new ROSLIB.Topic({
@@ -101,15 +104,15 @@
   var listener = new ROSLIB.Topic({
     ros : ros,
     name : '/temperature',
-    messageType : 'std_msgs/Float64'
+    messageType : 'std_msgs/Float32'
   });
 
   listener.subscribe(function(message) {
     console.log('Received message on ' + listener.name + ': ' + Math.round(message.data));
     temp = document.getElementById("TEMP");
-    if(message.data>120){
+    if(message.data>60){
 	temp.className="danger";
-    } else if(message.data>50) {
+    } else if(message.data>40) {
 	temp.className="warning";
     } else {
 	temp.className="safe";
@@ -161,7 +164,7 @@ function generateHTML(){
 	}
 // regenerate the smaller elements whenever something changes
 function generateSizes(){
-	mapEle = document.getElementById("map").getElementsByTagName("canvas")[0];
+	mapEle = document.getElementById("nav").getElementsByTagName("canvas")[0];
 	width = document.getElementById("wd").offsetWidth;
 	mjpegEle = document.getElementById("mjpeg").getElementsByTagName("canvas")[0];
 	if(width>=1280)
@@ -213,25 +216,25 @@ function generateSizes(){
   {
 	loadJoy();
 	state = "teleop";
+	statePublish(state);
 	generateHTML();
 	generateSizes();
-	statePublish(state);
   }
   function load2D()
   {
 	if(state=="teleop"){destroyJoy();}
 	state = "2d";
+	statePublish(state);
 	generateHTML();
 	generateSizes();
-	statePublish(state);
   } 
   function loadExplore()
   {
 	if(state=="teleop"){destroyJoy();}
 	state = "explore";
+	statePublish(state);
 	generateHTML();
 	generateSizes();
-	statePublish(state);
   }
   function loadData(name)
   {
@@ -241,29 +244,31 @@ function generateSizes(){
 
 function init(){
     // Create the main viewer.
-    viewer = new MJPEGCANVAS.Viewer({
+    camera_viewer = new MJPEGCANVAS.Viewer({
       divID : 'mjpeg',
-      host : '192.168.200.203', 
+      host : ip, 
       width : 640,
       height : 480,
-      topic : '/usb_cam/image_raw'
+      quality: 10,
+      topic : '/camera/image_color'
     });
 
-    mymap = new ROS2D.Viewer({
-      divID : 'map',
-      width : 0,
-      height : 0
+    // Create the main viewer.
+    nav_viewer = new ROS2D.Viewer({
+      divID : 'nav',
+      width : 750,
+      height : 800
     });
 
-    // Setup the map client.
-    var gridClient = new ROS2D.OccupancyGridClient({
+    // Setup the nav client.
+    nav_client = new NAV2D.OccupancyGridClientNav({
       ros : ros,
-      rootObject : map.scene
+      rootObject : nav_viewer.scene,
+      viewer : nav_viewer,
+      serverName : '/aribo',
+      continuous : false
     });
-    // Scale the canvas to fit to the map
-    gridClient.on('change', function(){
-      map.scaleToDimensions(gridClient.currentGrid.width, gridClient.currentGrid.height);
-    });
+
     var twist = new ROSLIB.Message({
       linear : {
         x : 0,
@@ -279,6 +284,10 @@ function init(){
     cmdCamera.publish(twist);
     cmdVel.publish(twist);
 
+ statePublish('teleop');
+ 		loadTeleop();
+		generateHTML();
+		generateSizes();
 
 }
 
@@ -287,8 +296,8 @@ function init(){
 
 	</head>
 
-<body>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<body onload="init()">
+	<script src="javascript/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<div class="row-fluid" id="wd">
 	<div class="span12">
@@ -321,7 +330,7 @@ function init(){
 		<div id="container">
 		<table><tr>
 			<td height=0 width=0><div id="mjpeg"></div><span id="result"></span></td>
-			<td height=0 width=0><div id="map"></div></td>
+			<td height=0 width=0><div id="nav"></div></td>
 		</tr></table>
 
 
@@ -346,17 +355,14 @@ function init(){
 		})
 
 		setInterval(function(){
-			twistPublish(joystick.deltaX(),joystick.deltaY(),joystick._baseX,joystick._baseY);
+			twistPublish(-joystick.deltaX(),-joystick.deltaY(),joystick._baseX,joystick._baseY);
 		}, 1/10 * 1000);
 		}
 
 		function destroyJoy(){
 			joystick.destroy();
 		}
-		init();
-		generateHTML();
-		generateSizes();
-		loadTeleop();
+
 	</script>
 	</body>
 </html>

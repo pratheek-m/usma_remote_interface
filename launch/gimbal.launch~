@@ -1,6 +1,0 @@
-<launch>
-
-    <include file="$(find aribo)/launch/controller_manager.launch" />
-    <include file="$(find aribo)/launch/controller_spawner.launch" />  
-
-</launch>
