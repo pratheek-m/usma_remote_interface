@@ -1,7 +1,8 @@
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 <script type="text/javascript" src="javascript/easeljs.min.js"></script>
 <script type="text/javascript" src="javascript/eventemitter2.min.js"></script>
 <script type="text/javascript" src="javascript/roslib.min.js"></script>
@@ -9,12 +10,13 @@
 <script type="text/javascript" src="javascript/ros2d.min.js"></script>
 <script type="text/javascript" src="javascript/nav2d.js"></script>
 
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-
+<link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
+<script type="text/javascript" type="text/javascript">
 
-    <script type="text/javascript" type="text/javascript">
-  var ip = '10.42.0.11';
+  // Change to the IP of the control computer
+  var ip = '192.168.0.16';
+  //var ip = '192.168.200.203';
   var state = "teleop";
   var ros = new ROSLIB.Ros({
     url : 'ws://'+ip+':9090'
@@ -45,7 +47,6 @@
 	console.log(next);
 	stateMachine.publish(next);
   }
-
 
   // command states that are listened in on
   var cmdVel = new ROSLIB.Topic({
@@ -250,7 +251,9 @@ function init(){
       width : 640,
       height : 480,
       quality: 10,
-      topic : '/camera/image_color'
+      // Change to match the topic name of your camera feed 
+      topic : '/usb_cam/image_raw'
+      //topic : '/camera/image_color'
     });
 
     // Create the main viewer.
@@ -353,6 +356,8 @@ function init(){
 		joystick.addEventListener('touchEnd', function(){
 			console.log('up')
 		})
+
+		// Change velocity direction and scaling if needed
 
 		setInterval(function(){
 			twistPublish(-joystick.deltaX(),-joystick.deltaY(),joystick._baseX,joystick._baseY);

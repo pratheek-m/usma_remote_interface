@@ -1,0 +1,10 @@
+<launch>
+
+    <include file="$(find aribo)/launch/controller_manager.launch" />
+    <include file="$(find aribo)/launch/controller_spawner.launch" />  
+
+    <!-- Start the touch gimbal node -->
+
+    <node name="move_gimbal_touch" pkg="aribo" type="move_gimbal_touch.py" output="screen" />
+
+</launch>

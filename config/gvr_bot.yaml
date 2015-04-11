@@ -1,0 +1,7 @@
+gvr_bot:
+    updateFreq: 10.00
+    teleopGain: -0.01
+    obstacleGain: -0.05
+    navGain: -0.5
+lidar:
+    gain: 1.00

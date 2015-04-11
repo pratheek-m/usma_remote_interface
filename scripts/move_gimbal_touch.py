@@ -42,16 +42,17 @@ from sensor_msgs.msg import Joy
 from std_msgs.msg import Float64
 from dynamixel_controllers.srv import *
 from dynamixel_msgs.msg import JointState as JointState
+from geometry_msgs.msg import Twist
 
 class MoveGimbal():
     def __init__(self):
         self.is_running = True
-        self.step_size = 1.0 * 3.14 / 180.0
-        self.joy_data = None
+        self.step_size = 0.001
+        self.touch_data = None
         self.prev_time = time.time()
         
-        rospy.init_node('move_gimbal_joy', anonymous=True)
-        rospy.Subscriber('/joy', Joy, self.read_joystick_data)
+        rospy.init_node('move_gimbal_touch', anonymous=True)
+        rospy.Subscriber('/teleopCam', Twist, self.read_touch_data)
 
         self.servo_position_pan = rospy.Publisher('/pan_controller/command', Float64)
         self.servo_position_tilt = rospy.Publisher('/tilt_controller/command', Float64)
@@ -59,28 +60,37 @@ class MoveGimbal():
         self.pan_joint = 0.0
 	self.tilt_joint = 0.0
 
-    def read_joystick_data(self, data):
-        self.joy_data = data
+    def read_touch_data(self, data):
+        self.touch_data = data
         cur_time = time.time()
         timediff = cur_time - self.prev_time
         self.prev_time = cur_time
 
     def update_gimbal_position(self):
         while self.is_running:
-            if self.joy_data:
-		self.pan_joint += 1 * self.joy_data.axes[2] * self.step_size
-		self.tilt_joint += -1 * self.joy_data.axes[1] * self.step_size
+            if self.touch_data:
+		#if self.pan_joint > -2.6 and self.pan_joint < 2.6:
+		#if self.pan_joint > -1.0 and self.pan_joint < 1.0:
+		self.pan_joint += 1 * self.touch_data.angular.z * self.step_size
+		#if self.tilt_joint > -1.7 and self.pan_joint < 1.7:
+		#if self.tilt_joint > -1.0 and self.pan_joint < 1.0:
+		self.tilt_joint += 1 * self.touch_data.angular.x * self.step_size
+		print "touch"
+	    else:
+		print "no touch"
+		self.pan_joint = 0.0
+		self.tilt_joint = 0.0
+
 	    self.servo_position_pan.publish(self.pan_joint)
 	    self.servo_position_tilt.publish(self.tilt_joint)
             time.sleep(0.05)
 
 if __name__ == '__main__':
-    try:
-        move_gimbal = MoveGimbal()
-        t = Thread(target=move_gimbal.update_gimbal_position)
-        t.start()
-        rospy.spin()
-        move_gimbal.alive = False
-        t.join()
-    except rospy.ROSInterruptException: pass
+    move_gimbal = MoveGimbal()
+    t = Thread(target=move_gimbal.update_gimbal_position)
+    t.start()
+    rospy.spin()
+    move_gimbal.alive = False
+    t.join()
+
 

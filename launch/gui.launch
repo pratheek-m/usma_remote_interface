@@ -1,17 +1,8 @@
 <launch>
 
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+
   <node pkg="mjpeg_server" type="mjpeg_server" name="mjpeg_server" />
-
-
-  <include file="$(find rosaria)/launch/pioneer_robot.launch"/>
-
-  <rosparam command="load" file="$(find aribo)/config/pioneer.yaml" />
-
-  <node pkg="aribo" type="velocityControl.py" name="velocityControl">
-    <remap from="/VC/teleop" to="/teleop" />
-    <remap from="/VC/out" to="/RosAria/cmd_vel" />
-  </node>
 
   <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" >
     <param name="video_device" value="/dev/video1" />

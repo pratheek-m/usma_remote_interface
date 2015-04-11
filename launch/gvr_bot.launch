@@ -1,0 +1,12 @@
+<launch>
+
+  <node name="gvr_bot_bridge" pkg="gvr_bot_bridge" type="gvr_bot_bridge_node" output="screen"/>
+
+  <rosparam command="load" file="$(find aribo)/config/gvr_bot.yaml" />
+
+  <node pkg="aribo" type="velocityControl.py" name="velocityControl" output="screen">
+    <remap from="/VC/teleop" to="/teleop" />
+    <remap from="/VC/out" to="/gvr_bot_bridge/cmd_vel" />
+  </node>
+
+</launch>

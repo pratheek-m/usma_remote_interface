@@ -14,10 +14,10 @@ import time
 # actually controls the velocity based on the multiple inputs provided
 class velocityControl:
 	def __init__(self):
-		self.update_freq = rospy.get_param('pioneer/updateFreq')
-		self.teleopGain = rospy.get_param('pioneer/teleopGain')
-		self.obstacleGain = rospy.get_param('pioneer/obstacleGain')
-		self.navGain = rospy.get_param('pioneer/navGain')
+		self.update_freq = rospy.get_param('gvr_bot/updateFreq')
+		self.teleopGain = rospy.get_param('gvr_bot/teleopGain')
+		self.obstacleGain = rospy.get_param('gvr_bot/obstacleGain')
+		self.navGain = rospy.get_param('gvr_bot/navGain')
 		self.out_twist_pub = rospy.Publisher('/VC/out', Twist)
 		self.outTwist = Twist()
 		self.outTwist.linear.x = 0.0
