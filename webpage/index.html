@@ -15,7 +15,7 @@
 <script type="text/javascript" type="text/javascript">
 
   // Change to the IP of the control computer
-  var ip = '192.168.0.16';
+  var ip = 'localhost';
   //var ip = '192.168.200.203';
   var state = "teleop";
   var ros = new ROSLIB.Ros({
@@ -269,7 +269,7 @@ function init(){
       rootObject : nav_viewer.scene,
       viewer : nav_viewer,
       serverName : '/aribo',
-      continuous : false
+      continuous : true
     });
 
     var twist = new ROSLIB.Message({

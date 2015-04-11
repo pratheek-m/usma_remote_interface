@@ -1,5 +1,7 @@
 <launch>
 
+    <rosparam command="load" file="$(find aribo)/config/gvr_bot.yaml" />
+
     <include file="$(find aribo)/launch/controller_manager.launch" />
     <include file="$(find aribo)/launch/controller_spawner.launch" />  
 

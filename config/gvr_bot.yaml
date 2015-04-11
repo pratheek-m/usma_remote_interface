@@ -1,7 +1,14 @@
 gvr_bot:
     updateFreq: 10.00
-    teleopGain: -0.01
+    teleopGain: -0.001
     obstacleGain: -0.05
     navGain: -0.5
 lidar:
     gain: 1.00
+camera_limits:
+    pan:
+        lower: -1.57
+        upper: 1.57
+    tilt:
+        lower: -1.57
+        upper: 1.57

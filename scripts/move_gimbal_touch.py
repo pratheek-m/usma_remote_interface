@@ -1,34 +1,5 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2008, Willow Garage, Inc.  All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-# 
-#     * Redistributions of source code must retain the above copyright notice,
-#     this list of conditions and the following disclaimer.  * Redistributions
-#     in binary form must reproduce the above copyright notice, this list of
-#     conditions and the following disclaimer in the documentation and/or
-#     other materials provided with the distribution. # Neither the name of
-#     the Willow Garage, Inc. nor the names of its contributors may be used to
-#     endorse or promote products derived from this software without specific
-#     prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-
-# Author: Daniel Hewlett
-# Author: Antons Rebguns
-
 PKG = 'aribo'
 
 import roslib; roslib.load_manifest(PKG)
@@ -49,9 +20,11 @@ class MoveGimbal():
         self.is_running = True
         self.step_size = 0.001
         self.touch_data = None
-        self.prev_time = time.time()
+	self.teleopTime = time.time()
         
         rospy.init_node('move_gimbal_touch', anonymous=True)
+	self.pan_limit = rospy.get_param('/camera_limits/pan')
+	self.tilt_limit = rospy.get_param('/camera_limits/tilt')
         rospy.Subscriber('/teleopCam', Twist, self.read_touch_data)
 
         self.servo_position_pan = rospy.Publisher('/pan_controller/command', Float64)
@@ -60,30 +33,32 @@ class MoveGimbal():
         self.pan_joint = 0.0
 	self.tilt_joint = 0.0
 
+	self.update_freq = rospy.get_param('gvr_bot/updateFreq')
+
     def read_touch_data(self, data):
         self.touch_data = data
-        cur_time = time.time()
-        timediff = cur_time - self.prev_time
-        self.prev_time = cur_time
+        self.teleopTime = time.time()
 
     def update_gimbal_position(self):
+	rate = rospy.Rate(self.update_freq)
         while self.is_running:
-            if self.touch_data:
-		#if self.pan_joint > -2.6 and self.pan_joint < 2.6:
-		#if self.pan_joint > -1.0 and self.pan_joint < 1.0:
+            if not self.touch_data == None and (time.time() - self.teleopTime)<0.2:
 		self.pan_joint += 1 * self.touch_data.angular.z * self.step_size
-		#if self.tilt_joint > -1.7 and self.pan_joint < 1.7:
-		#if self.tilt_joint > -1.0 and self.pan_joint < 1.0:
 		self.tilt_joint += 1 * self.touch_data.angular.x * self.step_size
-		print "touch"
-	    else:
-		print "no touch"
-		self.pan_joint = 0.0
-		self.tilt_joint = 0.0
+
+	    if self.pan_joint<self.pan_limit['lower']:
+		self.pan_joint=self.pan_limit['lower']
+            elif self.pan_joint>self.pan_limit['upper']:
+		self.pan_joint=self.pan_limit['upper']
+
+	    if self.tilt_joint<self.tilt_limit['lower']:
+	       self.tilt_joint=self.tilt_limit['lower']
+            elif self.tilt_joint>self.tilt_limit['upper']:
+	       self.tilt_joint=self.tilt_limit['upper']
 
 	    self.servo_position_pan.publish(self.pan_joint)
 	    self.servo_position_tilt.publish(self.tilt_joint)
-            time.sleep(0.05)
+            rate.sleep()
 
 if __name__ == '__main__':
     move_gimbal = MoveGimbal()

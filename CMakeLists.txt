@@ -7,7 +7,11 @@ project(aribo)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
+  pcl_ros
+  
 )
+
+find_package(PCL 1.2 REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -94,7 +98,11 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}
 )
+
+link_directories(${PCL_LINK_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 ## Declare a cpp library
 # add_library(hdt_vision
@@ -102,16 +110,17 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-# add_executable(hdt_vision_node src/hdt_vision_node.cpp)
+add_executable(vcpp src/velodyne_cloud_preprocessor.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(hdt_vision_node hdt_vision_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(hdt_vision_node
-#   ${catkin_LIBRARIES}
-# )
+ target_link_libraries(vcpp
+   ${catkin_LIBRARIES}
+   ${PCL_LIBRARIES}
+ )
 
 #############
 ## Install ##

@@ -18,7 +18,7 @@ class velocityControl:
 		self.teleopGain = rospy.get_param('gvr_bot/teleopGain')
 		self.obstacleGain = rospy.get_param('gvr_bot/obstacleGain')
 		self.navGain = rospy.get_param('gvr_bot/navGain')
-		self.out_twist_pub = rospy.Publisher('/VC/out', Twist)
+		self.out_twist_pub = rospy.Publisher('/gvr_bot_bridge/cmd_vel', Twist)
 		self.outTwist = Twist()
 		self.outTwist.linear.x = 0.0
 		self.outTwist.linear.y = 0.0
@@ -57,17 +57,10 @@ class velocityControl:
 		while self.alive == True and not rospy.is_shutdown():
 		   self.outTwist.linear.x = 0.0
 		   self.outTwist.angular.z = 0.0
-		   if self.obstacleData and self.teleopData:
-			self.outTwist.linear.x += self.obstacleData.linear.x*self.obstacleGain
-			self.outTwist.angular.z += self.obstacleData.angular.z*self.obstacleGain
-			if self.state=="teleop": # and abs(self.obstacleData.linear.x)<2.0 and abs(self.obstacleData.angular.z)<2.0:
-			    if (time.time()-self.teleopTime)<1.0:
+		   if not self.teleopData == None:
+			if (time.time()-self.teleopTime)<1.0:
 				self.outTwist.linear.x += (self.teleopData.linear.x*self.teleopGain)
 				self.outTwist.angular.z += (self.teleopData.angular.z*self.teleopGain)
-			elif self.state=="2d" and self.navData:
-				self.outTwist.linear.x += self.navData.linear.x*self.navGain
-				self.outTwist.angular.z += self.navData.angular.z*self.navGain
-				print self.outTwist
 			self.outTwist.linear.x = -self.outTwist.linear.x
 			self.outTwist.angular.z = -self.outTwist.angular.z
 			self.out_twist_pub.publish(self.outTwist)
@@ -78,6 +71,7 @@ if __name__ == '__main__':
 	try:
 		move = velocityControl()
 		t = Thread(target=move.updateCommandVelocity)
+		print "thread start"
 		t.start()
 		rospy.spin()
 		move.alive = False
