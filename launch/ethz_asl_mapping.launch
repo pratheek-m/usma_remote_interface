@@ -9,8 +9,9 @@ To debug, use: launch minus prefix= "gdb minus minus args"
 
 <launch>
   <node name="mapper" type="mapper" pkg="ethzasl_icp_mapper" output="screen"> 
-		<remap from="cloud_in" to="/velodyne_points" />
+		<remap from="cloud_in" to="/vcpp/cloud_out" />
 		<param name="subscribe_scan" value="false"/>
+		<param name="subscribe_cloud" value="true"/>
 		<param name="icpConfig" value="$(find ethzasl_icp_mapper)/launch/openni/icp.yaml" />
 		<param name="inputFiltersConfig" value="$(find ethzasl_icp_mapper)/launch/openni/input_filters.yaml" />
 		<param name="mapPreFiltersConfig" value="$(find ethzasl_icp_mapper)/launch/openni/map_pre_filters.yaml" />
@@ -22,6 +23,7 @@ To debug, use: launch minus prefix= "gdb minus minus args"
 		<param name="minMapPointCount" value="0" />
 		<param name="useROSLogger" value="false" />
 		<param name="inputQueueSize" value="1" />
+		<param name="localizing" value="true" />
   </node>
   
 	<!-- node name="static_transform_publisher" type="static_transform_publisher" pkg="tf" args="0 0 0 1.57 3.1416 1.57 /kinect /openni_rgb_optical_frame 100 "/ --> 
