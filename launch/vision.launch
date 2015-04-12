@@ -1,6 +1,6 @@
 <launch>
 
-
+	<param name="enable_statistics" value="true" />
 	<include file="$(find aribo)/launch/velodyne.launch" />
 	<include file="$(find aribo)/launch/ethz_asl_mapping.launch" />
 	<include file="$(find aribo)/launch/octomap_mapping.launch" />

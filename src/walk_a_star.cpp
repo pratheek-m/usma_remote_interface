@@ -4,14 +4,8 @@
 #include <ros/ros.h>
 #include <stdio.h>
 
-// this is a byproduct of wanting to use a struct as a key for a map....
-//const bool operator<(const gridPoint &r, const gridPoint &l)
-//  {    return ( (r.x<l.x)&&(r.y<l.y) );  }
-
-
-
   void walkingAStar::init() {
-    costmap_sub_ = nh_.subscribe("/travmap/travmap", 10, &walkingAStar::costmapCb, this);
+    costmap_sub_ = nh_.subscribe("/map", 10, &walkingAStar::costmapCb, this);
     goal_sub_ = nh_.subscribe("/move_base_simple/goal", 10, &walkingAStar::goalCb, this); 
     cur_loc_sub_ = nh_.subscribe("cur_loc", 10, &walkingAStar::curLocationCb, this); 
     
@@ -30,7 +24,6 @@
   }
 
   void walkingAStar::goalCb(const geometry_msgs::PoseStamped::ConstPtr& msg){
-
     ROS_INFO("Goal Position x: %f, y:%f, z:%f Orientation x:%f, y:%f, z:%f, w:%f", msg->pose.position.x,
       msg->pose.position.y, msg->pose.position.z, msg->pose.orientation.x,
       msg->pose.orientation.y, msg->pose.orientation.z, msg->pose.orientation.w);
@@ -40,7 +33,7 @@
 
   void walkingAStar::curLocationCb(const tf2_msgs::TFMessage::ConstPtr& msg){
     for(int i = 0; i < msg->transforms.size(); i++){
-      if( 0 == strcmp((msg->transforms[i].header.frame_id).c_str(), "pelvis") ){
+      if( 0 == strcmp((msg->transforms[i].header.frame_id).c_str(), "base_link") ){
         cur_location_.position.x = msg->transforms[i].transform.translation.x;
         cur_location_.position.y = msg->transforms[i].transform.translation.y;
         break;
@@ -48,7 +41,8 @@
     }
   }
 
-	int walkingAStar::solve(){
+  int walkingAStar::solve(){
+    ROS_INFO("==========PLANNING START=============");
     c_list_.clear();
     o_list_.clear();
 
@@ -100,7 +94,7 @@
         tmp.x = cx+dx;
         tmp.y = cy+dy;
         tmp.val =  (int)(o_grid_.data[(cx+dx)*o_grid_.info.width+(cy+dy)]);
-//        ROS_INFO("NEIGHTBORS X: %d -- Y: %d -- V: %d",tmp.x,tmp.y,tmp.val);
+        ROS_INFO("NEIGHTBORS X: %d -- Y: %d -- V: %d",tmp.x,tmp.y,tmp.val);
         // need to set this threshold as a single variable somewhere
         bool exists=false;
         for( int j = 0; j<c_list_.size(); j++){
@@ -112,18 +106,20 @@
           o_list_.push_back( tmp );
       }
       // checks for goal in the closed list
-      if( c_list_.back().x == goal.x && c_list_.back().y == goal.y ){
+      if( abs(c_list_.back().x - goal.x)<5 && abs(c_list_.back().y - goal.y)<5 ){
         found = true;
       }
-      if (count++>=50)
+      if (count++>=100)
         found = true;
+      int num_options = o_list_.size();
+      ROS_INFO("NUM NEXT MOVES %d", num_options );
     }
     ROS_INFO("[WALKING] PLAN FOUND");
-  //  gridPoint *tmp;
-  //  for( int i = 0; i < c_list_.size(); i++){
-  //    tmp = &c_list_.at(i);
-  //    ROS_INFO("%d: X: %d -- Y: %d -- V: %d",i,tmp->x,tmp->y,tmp->val);
-  //  }
+    gridPoint *tmp;
+    for( int i = 0; i < c_list_.size(); i++){
+      tmp = &c_list_.at(i);
+      ROS_INFO("%d: X: %d -- Y: %d -- V: %d",i,tmp->x,tmp->y,tmp->val);
+    }
     listToPath(path_, o_grid_.info.origin, o_grid_.info.resolution, c_list_);
 
     geometry_msgs::PoseStamped pose;
@@ -142,10 +138,12 @@
     geometry_msgs::PoseStamped pose;
     path.header.frame_id="map";
     path.header.seq++;
+    path.header.stamp = ros::Time::now();
     for( int i = 0; i < list.size(); i++ ){
       gridPointToPose(pose.pose, list.at(i), origin, resolution);
       pose.header.frame_id="map";
       pose.header.seq=i;
+      pose.header.stamp = ros::Time::now();
       path.poses.push_back(pose);
     }
   }
@@ -171,8 +169,8 @@
     dxt = two->x-goal.x;
     dyt = two->y-goal.y;
    
-    score_one = 5*sqrt((float)(dxo*dxo+dyo*dyo))+one->val; 
-    score_two = 5*sqrt((float)(dxt*dxt+dyt*dyt))+two->val; 
+    score_one = 50*sqrt((float)(dxo*dxo+dyo*dyo))+one->val; 
+    score_two = 50*sqrt((float)(dxt*dxt+dyt*dyt))+two->val; 
     return score_two-score_one;
   }
 

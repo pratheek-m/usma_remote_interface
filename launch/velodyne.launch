@@ -11,6 +11,6 @@
   <arg name="manager" value="velodyne_nodelet_manager"/>
   <arg name="output_topic" value="/velodyne"/>
 
-  <node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" args="-d $(find aribo)/launch/velodyne.rviz"/>
+  <!-- node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" args="-d $(find aribo)/launch/velodyne.rviz"/ -->
 
 </launch>

@@ -1,0 +1,6 @@
+<launch>
+
+	<param name="enable_statistics" value="true" />
+	<node name="move_planning_high_level" type="walk_a_star" pkg="aribo" />
+
+</launch>

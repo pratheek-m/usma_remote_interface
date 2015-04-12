@@ -26,10 +26,12 @@
 		<!-- data source to integrate (PointCloud2) -->
 		<remap from="/cloud_in" to="/vcpp/cloud_out" />
 		<remap from="/tf_static" to="/tf" />
-
-		<remap from="/projected_map" to="/slow_map" />
+		<remap from="/projected_map" to="/binary_map" />
+	</node>
+	<node name="grade_costmap" type="costmapProcessor.py" pkg="aribo">
 	</node>
 	<node name="mapRepeater" type="mapRepeater.py" pkg="aribo">
+		<remap from="/slow_map" to="/graded_map" />
 		<remap from="/fast_map" to="/map" />
 	</node>
 </launch>

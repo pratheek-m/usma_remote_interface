@@ -97,6 +97,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
   ${PCL_INCLUDE_DIRS}
 )
@@ -112,6 +113,8 @@ add_definitions(${PCL_DEFINITIONS})
 ## Declare a cpp executable
 add_executable(vcpp src/velodyne_cloud_preprocessor.cpp)
 
+add_executable(walk_a_star src/walk_a_star.cpp)
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(hdt_vision_node hdt_vision_generate_messages_cpp)
@@ -121,6 +124,8 @@ add_executable(vcpp src/velodyne_cloud_preprocessor.cpp)
    ${catkin_LIBRARIES}
    ${PCL_LIBRARIES}
  )
+
+target_link_libraries(walk_a_star ${catkin_LIBRARIES})
 
 #############
 ## Install ##
