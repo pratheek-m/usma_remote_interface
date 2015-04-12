@@ -251,6 +251,7 @@ ROS2D.OccupancyGridClient = function(options) {
     name : topic,
     messageType : 'nav_msgs/OccupancyGrid',
     compression : 'png'
+    //throttle_rate : 100
   });
 
   rosTopic.subscribe(function(message) {
@@ -270,12 +271,11 @@ ROS2D.OccupancyGridClient = function(options) {
     else {
       that.rootObject.addChild(that.currentGrid);
     }
-
-    that.emit('change');
+      that.emit('change');
 
     // check if we should unsubscribe
     if (!that.continuous) {
-      rosTopic.unsubscribe();
+     //rosTopic.unsubscribe();
     }
   });
 };

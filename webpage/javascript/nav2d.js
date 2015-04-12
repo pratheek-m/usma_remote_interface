@@ -47,13 +47,15 @@ NAV2D.ImageMapClientNav = function(options) {
     image : image
   });
   client.on('change', function() {
-    that.navigator = new NAV2D.Navigator({
+  that.navigator = new nav2d.navigator({
       ros : that.ros,
-      serverName : that.serverName,
-      actionName : that.actionName,
-      rootObject : that.rootObject,
-      withOrientation : that.withOrientation
+      servername : that.servername,
+      actionname : that.actionname,
+      rootobject : that.rootobject,
+      withorientation : that.withorientation
     });
+
+
 
     // scale the viewer to fit the map
     that.viewer.scaleToDimensions(client.currentImage.width, client.currentImage.height);

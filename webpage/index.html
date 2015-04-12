@@ -7,7 +7,7 @@
 <script type="text/javascript" src="javascript/eventemitter2.min.js"></script>
 <script type="text/javascript" src="javascript/roslib.min.js"></script>
 <script type="text/javascript" src="javascript/mjpegcanvas.min.js"></script>
-<script type="text/javascript" src="javascript/ros2d.min.js"></script>
+<script type="text/javascript" src="javascript/ros2d.js"></script>
 <script type="text/javascript" src="javascript/nav2d.js"></script>
 
 <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -243,6 +243,25 @@ function generateSizes(){
   }
 
 
+function new_viewer(){
+
+    // Create the main viewer.
+    nav_viewer = new ROS2D.Viewer({
+      divID : 'nav',
+      width : 640,
+      height : 480
+    });
+
+    // Setup the nav client.
+    nav_client = new NAV2D.OccupancyGridClientNav({
+      ros : ros,
+      rootObject : nav_viewer.scene,
+      viewer : nav_viewer,
+      serverName : '/aribo',
+      continuous : false
+    });
+}
+
 function init(){
     // Create the main viewer.
     camera_viewer = new MJPEGCANVAS.Viewer({
@@ -259,8 +278,8 @@ function init(){
     // Create the main viewer.
     nav_viewer = new ROS2D.Viewer({
       divID : 'nav',
-      width : 750,
-      height : 800
+      width : 640,
+      height : 480
     });
 
     // Setup the nav client.
@@ -269,7 +288,7 @@ function init(){
       rootObject : nav_viewer.scene,
       viewer : nav_viewer,
       serverName : '/aribo',
-      continuous : true
+      continuous : false
     });
 
     var twist = new ROSLIB.Message({
