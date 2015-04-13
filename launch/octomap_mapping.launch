@@ -28,9 +28,6 @@
 		<remap from="/projected_map" to="/binary_map" />
 	</node>
 	<node name="grade_costmap" type="costmapProcessor.py" pkg="aribo">
-	</node>
-	<node name="mapRepeater" type="mapRepeater.py" pkg="aribo">
-		<remap from="/slow_map" to="/graded_map" />
-		<remap from="/fast_map" to="/map" />
+		<remap from="/graded_map" to="/map" />
 	</node>
 </launch>

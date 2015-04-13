@@ -3,5 +3,7 @@
 	<include file="$(find aribo)/launch/vision.launch" />
 	<include file="$(find aribo)/launch/movement.launch" />
 	<include file="$(find aribo)/launch/gui.launch" />
+	<include file="$(find aribo)/launch/remote_teleop.launch" />
+	<include file="$(find aribo)/launch/gimbal_touch.launch" />
 
 </launch>

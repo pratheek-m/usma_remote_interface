@@ -24,7 +24,7 @@ class costmap_processing:
 		# convert to a convinient numpy array of the right shape
 		np_original = np.array(data.data).reshape(data.info.height, data.info.width)
 		np_costmap = np.array(data.data).reshape(data.info.height, data.info.width)
-		fp = np.ones((7,7))
+		fp = np.ones((5,5))
 		fp = fp/2.0
 		fp[1][1] = 1.0
 		np_costmap = grey_dilation(np_costmap,footprint=fp)

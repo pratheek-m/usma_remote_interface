@@ -1,0 +1,4 @@
+digraph G {
+"base_link" -> "velodyne"[label="Broadcaster: /lidar_tf_broadcaster\nAverage rate: 97.897 Hz\nMost recent transform: 1428886346.497 \nBuffer length: 4.924 sec\n"];
+"map" -> "base_link"[label="Broadcaster: /mapper\nAverage rate: 17.107 Hz\nMost recent transform: 1428886346.392 \nBuffer length: 5.086 sec\n"];
+}

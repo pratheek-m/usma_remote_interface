@@ -7,7 +7,7 @@
   void walkingAStar::init() {
     costmap_sub_ = nh_.subscribe("/map", 10, &walkingAStar::costmapCb, this);
     goal_sub_ = nh_.subscribe("/move_base_simple/goal", 10, &walkingAStar::goalCb, this); 
-    cur_loc_sub_ = nh_.subscribe("cur_loc", 10, &walkingAStar::curLocationCb, this); 
+    cur_loc_sub_ = nh_.subscribe("/tf", 10, &walkingAStar::curLocationCb, this); 
     
     path_pub_ = nh_.advertise<nav_msgs::Path>("path",10);
     goal_pub_ = nh_.advertise<geometry_msgs::PoseStamped>("goal",10);
@@ -20,7 +20,6 @@
     o_grid_.header = msg->header;
     o_grid_.data = msg->data;
 
-    this->solve();
   }
 
   void walkingAStar::goalCb(const geometry_msgs::PoseStamped::ConstPtr& msg){
@@ -29,6 +28,7 @@
       msg->pose.orientation.y, msg->pose.orientation.z, msg->pose.orientation.w);
 
     goal_ = msg->pose;
+    this->solve();
   }
 
   void walkingAStar::curLocationCb(const tf2_msgs::TFMessage::ConstPtr& msg){
@@ -102,7 +102,7 @@
              exists = true;
           }
         }
-        if( tmp.val<50 && !exists && tmp.val!=-1 )
+        if( tmp.val<80 && !exists && tmp.val!=-1 )
           o_list_.push_back( tmp );
       }
       // checks for goal in the closed list
