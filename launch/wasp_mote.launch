@@ -1,0 +1,5 @@
+<launch>
+  
+    <node name="read_mote" pkg="aribo" type="waspMote.py" output="screen" />
+
+</launch>
