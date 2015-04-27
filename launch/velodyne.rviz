@@ -78,6 +78,29 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: true
+        base_link:
+          Value: true
+        map:
+          Value: true
+        velodyne:
+          Value: true
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        map:
+          base_link:
+            velodyne:
+              {}
+      Update Interval: 0
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -102,7 +125,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 7.79355
+      Distance: 2.69655
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -114,10 +137,10 @@ Visualization Manager:
         Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.805398
+      Pitch: 0.535398
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.13859
+      Yaw: 4.91359
     Saved: ~
 Window Geometry:
   Displays:
@@ -135,5 +158,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 393
-  Y: 113
+  X: 285
+  Y: 116
