@@ -1,0 +1,15 @@
+port: /dev/ttyUSB1
+read_rate: 15
+write_rate: 25
+joints: {
+   arm_shoulder_pan_joint: {id: 1, neutral: 180, max_angle: 270, min_angle: 90, max_speed: 90},
+   arm_shoulder_lift_joint: {id: 2, neutral: 180, max_angle: 270, min_angle: 90, max_speed: 90},
+   arm_elbow_lift_joint: {id: 3, neutral: 270, max_angle: 360, min_angle: 180, max_speed: 90},
+   arm_wrist_lift_joint: {id: 4, neutral: 180, max_angle: 270, min_angle: 90, max_speed: 90},
+   arm_wrist_pan_joint: {id: 5, neutral: 150, max_angle: 300, min_angle: 0, max_speed: 90},
+   gripper: {id: 6, neutral: 150, max_angle: 150, min_angle: 0, max_speed: 90},
+}
+controllers: {
+    arm_controller: {type: follow_controller, joints: [arm_shoulder_pan_joint, arm_shoulder_lift_joint,  arm_elbow_lift_joint,
+arm_wrist_lift_joint, arm_wrist_pan_joint, gripper], action_name: arm_controller/follow_joint_trajectory,  onboard: False }
+}

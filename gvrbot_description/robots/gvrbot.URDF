@@ -1,0 +1,43 @@
+<robot
+  name="gvrbot">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.00027335 0.08207 -0.33624"
+        rpy="0 0 0" />
+      <mass
+        value="16.847" />
+      <inertia
+        ixx="0.60059"
+        ixy="0.00026521"
+        ixz="-0.00029583"
+        iyy="0.75988"
+        iyz="0.0058481"
+        izz="0.21048" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 1.57" />
+      <geometry>
+        <mesh
+          filename="package://aribo/gvrbot_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://aribo/gvrbot_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+</robot>

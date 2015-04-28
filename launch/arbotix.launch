@@ -1,0 +1,15 @@
+<launch>
+
+  <node name="arbotix" pkg="arbotix_python" type="arbotix_driver" output="screen">
+      <rosparam file="$(find aribo)/config/arbotix.yaml" command="load" />
+  </node>
+
+  <!-- Start the joystick node -->
+  <node respawn="true" pkg="joy" type="joy_node" name="joy" >
+    <param name="dev" type="string" value="/dev/input/js0" />
+    <param name="deadzone" value="0.12" />
+  </node> 
+
+  <node name="move_arm_joy" pkg="aribo" type="move_arm_joy.py" output="screen" />
+
+</launch>

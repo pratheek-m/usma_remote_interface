@@ -1,0 +1,29 @@
+<launch>
+
+  <node pkg="tf" type="static_transform_publisher" name="lidar_tf_broadcaster" args="-0.25 0 0.25 0 0 0 base_link velodyne 10" />
+
+  <arg
+    name="model" />
+  <arg
+    name="gui"
+    default="False" />
+  <param
+    name="robot_description"
+    textfile="$(find aribo)/gvrbot_description/robots/gvrbot.URDF" />
+  <param
+    name="use_gui"
+    value="$(arg gui)" />
+  <node
+    name="joint_state_publisher"
+    pkg="joint_state_publisher"
+    type="joint_state_publisher" />
+  <node
+    name="robot_state_publisher"
+    pkg="robot_state_publisher"
+    type="state_publisher" />
+  <node
+    name="rviz"
+    pkg="rviz"
+    type="rviz"
+    args="-d $(find aribo)/gvrbot_description/launch/urdf.rviz" />
+</launch>
