@@ -14,7 +14,19 @@
 <link href="css/style.css" rel="stylesheet">
 
     <script type="text/javascript" type="text/javascript">
-  var ip = '10.42.0.11';
+    function getParam(name)
+    {  
+        name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");  
+        var regexS = "[\\?&]"+name+"=([^&#]*)";  
+        var regex = new RegExp( regexS );  
+        var results = regex.exec(window.location.href);
+        if(results == null)
+            return "";  
+        else    
+            return results[1];
+    }
+
+  var ip = getParam('ip');
   var state = "teleop";
   var ros = new ROSLIB.Ros({
 url : 'ws://'+ip+':9090'
@@ -105,7 +117,6 @@ function loadTeleop()
   generateHTML();
   generateSizes();
 }
-}
 
 
 function init(){
@@ -171,7 +182,7 @@ function loadJoy(){
   joystick	= new VirtualJoystick({
 container	: document.getElementById('content'),
 mouseSupport	: true,
-ytrans		: -document.getElementById('navBar').clientHeight
+ytrans		: -0.0
 });
 joystick.addEventListener('touchStart', function(){
     console.log('down')
