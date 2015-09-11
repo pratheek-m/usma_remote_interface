@@ -16,8 +16,6 @@ class velocityControl:
 	def __init__(self):
 		self.update_freq = rospy.get_param('pioneer/updateFreq')
 		self.teleopGain = rospy.get_param('pioneer/teleopGain')
-		self.obstacleGain = rospy.get_param('pioneer/obstacleGain')
-		self.navGain = rospy.get_param('pioneer/navGain')
 		self.out_twist_pub = rospy.Publisher('/VC/out', Twist)
 		self.outTwist = Twist()
 		self.outTwist.linear.x = 0.0
@@ -30,12 +28,6 @@ class velocityControl:
 		self.teleopData = None
 		self.teleopTime = None
 		rospy.Subscriber('/VC/teleop', Twist, self.teleop)
-		self.navData = None
-		rospy.Subscriber('/VC/2DNav',Twist, self. navCb)
-		self.obstacleData = None
-		rospy.Subscriber('/VC/obstacle', Twist, self.obstacle)
-		self.state = "teleop"
-		rospy.Subscriber('robot_state', String, self.stateCb) 
 		self.alive=True
 
 	def teleop(self, data):
@@ -57,23 +49,16 @@ class velocityControl:
 		while self.alive == True and not rospy.is_shutdown():
 		   self.outTwist.linear.x = 0.0
 		   self.outTwist.angular.z = 0.0
-		   if self.obstacleData and self.teleopData:
-			self.outTwist.linear.x += self.obstacleData.linear.x*self.obstacleGain
-			self.outTwist.angular.z += self.obstacleData.angular.z*self.obstacleGain
-			if self.state=="teleop": # and abs(self.obstacleData.linear.x)<2.0 and abs(self.obstacleData.angular.z)<2.0:
-			    if (time.time()-self.teleopTime)<1.0:
-				self.outTwist.linear.x += (self.teleopData.linear.x*self.teleopGain)
-				self.outTwist.angular.z += (self.teleopData.angular.z*self.teleopGain)
-			elif self.state=="2d" and self.navData:
-				self.outTwist.linear.x += self.navData.linear.x*self.navGain
-				self.outTwist.angular.z += self.navData.angular.z*self.navGain
-				print self.outTwist
-			self.outTwist.linear.x = -self.outTwist.linear.x
-			self.outTwist.angular.z = -self.outTwist.angular.z
+		   if self.teleopTime and self.teleopData:
+			   if (time.time()-self.teleopTime)<1.0:
+				   self.outTwist.linear.x += (self.teleopData.linear.x*self.teleopGain)
+				   self.outTwist.angular.z += (self.teleopData.angular.z*self.teleopGain)
+			print self.outTwist
 			self.out_twist_pub.publish(self.outTwist)
 			rate.sleep()
 			
 		time.sleep(self.sleep_time)
+
 if __name__ == '__main__':
 	try:
 		move = velocityControl()
