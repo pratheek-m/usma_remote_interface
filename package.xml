@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>aribo</name>
+  <name>usma_remote_interface</name>
   <version>0.0.0</version>
   <description>Package for pioneer control</description>
 

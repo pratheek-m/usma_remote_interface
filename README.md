@@ -1,4 +1,2 @@
-ARIBO
+usma_remote_interface
 =====================
-
-Controller for ARIBO Project
