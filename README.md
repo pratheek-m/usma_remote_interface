@@ -15,7 +15,7 @@ usma_remote_interface
 
 4. Edit the camera.launch argument for the correct video input.
   * $ `cd ~/catkin_ws/src/usma_remote_interface/launch`
-  * $ `ls /dev/video*` (to see availbale video devices)
+  * $ `ls /dev/video*` (to see available video devices)
   * $ `vim camera.launch` (or your preferred editor)
   * Change the video device. Internal webcams will typically be video0, an external webcam could be video1.
   * `<arg name="video_device" default="/dev/video1" />`
