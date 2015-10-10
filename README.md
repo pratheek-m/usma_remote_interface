@@ -10,8 +10,8 @@ usma_remote_interface
   * $ git clone https://github.com/westpoint-robotics/usma_remote_interface.git usma_remote_interface
   
 3. Run the setup script.
-  $ cd ~/catkin_ws/src/usma_remote_interface/scripts
-  $ ./usma_remote_interface_setup.sh
+  * $ cd ~/catkin_ws/src/usma_remote_interface/scripts
+  * $ ./usma_remote_interface_setup.sh
 
 4. Edit the camera.launch argument for the correct video input.
   * $ cd ~/catkin_ws/src/usma_remote_interface/launch
