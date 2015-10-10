@@ -1,6 +1,6 @@
 #!/bin/bash -i
 
-# sets up a couple extra pieces to let the OS know where openjaus is located
+# sets up apache and webpage configuration
 
 source $HOME/.bashrc
 
@@ -8,7 +8,6 @@ rospd usma_remote_interface/webpage
 
 sudo apt-get update
 sudo apt-get install apache2
-
 
 echo "
 <VirtualHost *:80>
@@ -30,7 +29,4 @@ sudo ln -s /etc/apache2/sites-available/usma_remote_interface.conf /etc/apache2/
 
 sudo service apache2 restart
 
-
 rospd
-
-

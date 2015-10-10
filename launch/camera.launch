@@ -1,5 +1,5 @@
 <launch>
-  <arg name="use_usb_cam" default="false" />
+  <arg name="use_usb_cam" default="true" />
 
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
 
