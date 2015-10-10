@@ -10,15 +10,15 @@ usma_remote_interface
   * $ git clone https://github.com/westpoint-robotics/usma_remote_interface.git usma_remote_interface
   
 3. Run the setup script.
-  * $ cd ~/catkin_ws/src/usma_remote_interface/scripts
-  * $ ./usma_remote_interface_setup.sh
+  $ cd ~/catkin_ws/src/usma_remote_interface/scripts
+  $ ./usma_remote_interface_setup.sh
 
 4. Edit the camera.launch argument for the correct video input.
   * $ cd ~/catkin_ws/src/usma_remote_interface/launch
   * $ ls /dev/video* (to see availbale video devices)
   * $ vim camera.launch (or your preferred editor)
   * Change the video device. Internal webcams will typically be video0, an external webcam could be video1.
-  * '<arg name="video_device" default="/dev/video1" />'
+  * `<arg name="video_device" default="/dev/video1" />`
 
 5. Set the IP address for the webserver.
 
