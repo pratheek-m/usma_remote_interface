@@ -18,7 +18,7 @@ usma_remote_interface
   * $ ls /dev/video* (to see availbale video devices)
   * $ vim camera.launch (or your preferred editor)
   * Change the video device. Internal webcams will typically be video0, an external webcam could be video1.
-  * <arg name="video_device" default="/dev/video1" />
+  * '<arg name="video_device" default="/dev/video1" />'
 
 5. Set the IP address for the webserver.
 
