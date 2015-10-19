@@ -26,7 +26,9 @@
             return results[1];
     }
 
-  var ip = getParam('ip');
+// would like to have the IP parameter set in a launch file
+
+  var ip = "192.168.200.69" //getParam('ip');
   var state = "teleop";
   var ros = new ROSLIB.Ros({
 url : 'ws://'+ip+':9090'
@@ -118,6 +120,9 @@ function loadTeleop()
   generateSizes();
 }
 
+// would like to set the image topic in a launch file
+
+// need to set up a general calibration file
 
 function init(){
   // Create the main viewer.
@@ -127,7 +132,8 @@ host : ip,
 width : 640,
 height : 480,
 quality: 10,
-topic : '/camera/image_color'
+topic : '/usb_cam/image_raw'
+//topic : '/camera/image_color'
 });
 
 var twist = new ROSLIB.Message({
