@@ -13,6 +13,7 @@
 
 <link href="css/style.css" rel="stylesheet">
 
+    <script type="text/javascript" src="config.js"></script> 
     <script type="text/javascript" type="text/javascript">
     function getParam(name)
     {  
@@ -28,7 +29,6 @@
 
 // would like to have the IP parameter set in a launch file
 
-  var ip = "192.168.200.69" //getParam('ip');
   var state = "teleop";
   var ros = new ROSLIB.Ros({
 url : 'ws://'+ip+':9090'
@@ -49,7 +49,7 @@ ros.on('close', function() {
 // command states that are listened in on
 var cmdVel = new ROSLIB.Topic({
 ros : ros,
-name : '/teleop',
+name : cmdVelocityTopic,
 messageType : 'geometry_msgs/Twist'
 });
 
@@ -132,7 +132,7 @@ host : ip,
 width : 640,
 height : 480,
 quality: 10,
-topic : '/usb_cam/image_raw'
+topic : imageTopic
 //topic : '/camera/image_color'
 });
 

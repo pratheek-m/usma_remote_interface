@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-PACKAGE = 'aribo'
+PACKAGE = 'usma_remote_interface'
 import roslib
 roslib.load_manifest(PACKAGE)
 import rospy
@@ -14,9 +14,9 @@ import time
 # actually controls the velocity based on the multiple inputs provided
 class velocityControl:
   def __init__(self):
-    self.update_freq = rospy.get_param('pioneer/updateFreq')
+    self.update_freq = rospy.get_param('VC/updateFreq')
     self.sleep_time = 1/self.update_freq
-    self.teleopGain = rospy.get_param('pioneer/teleopGain')
+    self.teleopGain = rospy.get_param('VC/teleopGain')
     self.out_twist_pub = rospy.Publisher('/VC/out', Twist)
     self.outTwist = Twist()
     self.outTwist.linear.x = 0.0
@@ -37,7 +37,6 @@ class velocityControl:
   
   def stateCb(self, data):
   	self.state = data.data
-  	print self.state
   
   def obstacle(self,data):
   	self.obstacleData = data
@@ -54,7 +53,6 @@ class velocityControl:
          if (time.time()-self.teleopTime)<1.0:
       	   self.outTwist.linear.x += (self.teleopData.linear.x*self.teleopGain)
       	   self.outTwist.angular.z += (self.teleopData.angular.z*self.teleopGain)
-      print self.outTwist
       self.out_twist_pub.publish(self.outTwist)
       rate.sleep()
       time.sleep(self.sleep_time)

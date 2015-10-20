@@ -1,4 +1,4 @@
-pioneer:
+VC:
     updateFreq: 10.00
     teleopGain: -0.01
 lidar:
