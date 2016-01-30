@@ -1,5 +1,5 @@
 VC:
-    updateFreq: 10.00
-    teleopGain: -0.01
+    updateFreq: 100.00
+    teleopGain: -1.0
 lidar:
     gain: 1.00

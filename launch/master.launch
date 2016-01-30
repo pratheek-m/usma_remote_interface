@@ -7,8 +7,7 @@
 
   <rosparam command="load" file="$(find usma_remote_interface)/config/gains.yaml" />
 
-  <node pkg="usma_remote_interface" type="velocityControl.py" name="velocityControl" output="screen">
-    <remap from="/VC/out" to="/cmd_vel" />
+  <node pkg="usma_remote_interface" type="remoteCmdDemux.py" name="remote_cmd_demux" output="screen">
   </node>
 
   <group if="$(arg use_usb_cam)">

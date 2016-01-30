@@ -1,211 +1,210 @@
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-<script type="text/javascript" src="javascript/easeljs.min.js"></script>
-<script type="text/javascript" src="javascript/eventemitter2.min.js"></script>
-<script type="text/javascript" src="javascript/roslib.min.js"></script>
-<script type="text/javascript" src="javascript/mjpegcanvas.min.js"></script>
-<script type="text/javascript" src="javascript/ros2d.min.js"></script>
-<script type="text/javascript" src="javascript/nav2d.js"></script>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <script type="text/javascript" src="javascript/easeljs.min.js"></script>
+        <script type="text/javascript" src="javascript/eventemitter2.min.js"></script>
+        <script type="text/javascript" src="javascript/roslib.min.js"></script>
+        <script type="text/javascript" src="javascript/mjpegcanvas.min.js"></script>
+        <script type="text/javascript" src="javascript/ros2d.min.js"></script>
+        <script type="text/javascript" src="javascript/nav2d.js"></script>
+        
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        
+        <link href="css/style.css" rel="stylesheet">
 
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+        <script type="text/javascript" src="config.js"></script> 
+        <script type="text/javascript" type="text/javascript">
+        function getParam(name)
+        {  
+            name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");  
+            var regexS = "[\\?&]"+name+"=([^&#]*)";  
+            var regex = new RegExp( regexS );  
+            var results = regex.exec(window.location.href);
+            if(results == null)
+                return "";  
+            else    
+                return results[1];
+        }
+        
+        // would like to have the IP parameter set in a launch file
+        
+        var state = "teleop";
+        var ros = new ROSLIB.Ros({
+        url : 'ws://'+ip+':9090'
+        });
+        
+        ros.on('connection', function() {
+                console.log('Connected to websocket server.');
+                });
+        
+        ros.on('error', function(error) {
+                console.log('Error connecting to websocket server: ', error);
+                });
+        
+        ros.on('close', function() {
+                console.log('Connection to websocket server closed.');
+                });
+        
+        // we're only going to keep 1 publisher here and demux it onboard
+        var cmdPublisher = new ROSLIB.Topic({
+        ros : ros,
+        name : cmdTopic,
+        messageType : 'geometry_msgs/TwistStamped'
+        });
+        
+        function twistPublish(dx,dy,cmd_target)
+        {
+            twist = new ROSLIB.Message({
+                                        header: {seq:0,stamp:{sec:0,nsec:0}, frame_id: cmd_target},
+                                        twist: {linear : {x : dy, y : 0, z : 0},
+                                                angular : {x : 0, y : 0, z : dx}}
+                                       });
+        
+            cmdPublisher.publish(twist);
+        }
+        
+        window.onresize = function(event) {
+            generateHTML();
+            generateSizes();
+        }
+        
+        
+        
+        // regenerate html whenever something on the screen changes
+        function generateHTML(){
+            cont = document.getElementById("content").getElementsByTagName("td");
+            width = document.getElementById("wd").offsetWidth;
+        
+            if (width >= 1280)
+            {
+                cont[0].height=480;
+                cont[0].width=640;
+                cont[1].height=480;
+                cont[1].width=640;
+            }
+            else
+            {
+                if(width>=640) {width=640;}
+                cont[0].height=width*2/3;
+                cont[0].width=width;
+                cont[1].height=0;
+                cont[1].width=0;
+            }
+        }
+        
+        // regenerate the smaller elements whenever something changes
+        function generateSizes(){
+            width = document.getElementById("wd").offsetWidth;
+            mjpegEle = document.getElementById("mjpeg").getElementsByTagName("canvas")[0];
+        
+            mjpegEle.height=width*2/3;
+            mjpegEle.width=width;
+        }
+        
+        
+        // Functions to load assets
+        function loadTeleop()
+        {
+            loadJoy();
+            state = "teleop";
+            generateHTML();
+            generateSizes();
+        }
+        
+        // would like to set the image topic in a launch file
+        
+        // need to set up a general calibration file
+        
+        function init(){
+            // Create the main viewer.
+            camera_viewer = new MJPEGCANVAS.Viewer({
+            divID : 'mjpeg',
+            host : ip, 
+            width : 640,
+            height : 480,
+            quality: 10,
+            topic : imageTopic
+        });
+       
+        twistPublish(0.0,0.0,"");
+        
+        loadTeleop();
+        generateHTML();
+        generateSizes();
+        
+        }
+        
+        
+        </script>
+        
+    </head>
 
-<link href="css/style.css" rel="stylesheet">
+    <body onload="init()">
+        <script src="javascript/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <div class="tab-content">
+        <div class="tab-pane active" id="lA">
 
-    <script type="text/javascript" src="config.js"></script> 
-    <script type="text/javascript" type="text/javascript">
-    function getParam(name)
-    {  
-        name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");  
-        var regexS = "[\\?&]"+name+"=([^&#]*)";  
-        var regex = new RegExp( regexS );  
-        var results = regex.exec(window.location.href);
-        if(results == null)
-            return "";  
-        else    
-            return results[1];
-    }
-
-// would like to have the IP parameter set in a launch file
-
-  var state = "teleop";
-  var ros = new ROSLIB.Ros({
-url : 'ws://'+ip+':9090'
-});
-
-ros.on('connection', function() {
-    console.log('Connected to websocket server.');
-    });
-
-ros.on('error', function(error) {
-    console.log('Error connecting to websocket server: ', error);
-    });
-
-ros.on('close', function() {
-    console.log('Connection to websocket server closed.');
-    });
-
-// command states that are listened in on
-var cmdVel = new ROSLIB.Topic({
-ros : ros,
-name : cmdVelocityTopic,
-messageType : 'geometry_msgs/Twist'
-});
-
-// splits the publish based on different window sides
-function twistPublish(dx,dy,bx,by)
-{
-  twist = new ROSLIB.Message({
-linear : {
-x : dy,
-y : 0,
-z : 0
-},
-angular : {
-x : 0,
-y : 0,
-z : dx
-}
-});
-
-cmdVel.publish(twist);
-}
-
-window.onresize = function(event) {
-  generateHTML();
-  generateSizes();
-}
-
-
-
-// regenerate html whenever something on the screen changes
-function generateHTML(){
-  cont = document.getElementById("content").getElementsByTagName("td");
-  width = document.getElementById("wd").offsetWidth;
-
-  if (width >= 1280)
-  {
-    cont[0].height=480;
-    cont[0].width=640;
-    cont[1].height=480;
-    cont[1].width=640;
-  }
-  else
-  {
-    if(width>=640) {width=640;}
-    cont[0].height=width*2/3;
-    cont[0].width=width;
-    cont[1].height=0;
-    cont[1].width=0;
-  }
-}
-
-// regenerate the smaller elements whenever something changes
-function generateSizes(){
-  width = document.getElementById("wd").offsetWidth;
-  mjpegEle = document.getElementById("mjpeg").getElementsByTagName("canvas")[0];
-
-  mjpegEle.height=width*2/3;
-  mjpegEle.width=width;
-}
-
-
-// Functions to load assets
-function loadTeleop()
-{
-  loadJoy();
-  state = "teleop";
-  generateHTML();
-  generateSizes();
-}
-
-// would like to set the image topic in a launch file
-
-// need to set up a general calibration file
-
-function init(){
-  // Create the main viewer.
-  camera_viewer = new MJPEGCANVAS.Viewer({
-divID : 'mjpeg',
-host : ip, 
-width : 640,
-height : 480,
-quality: 10,
-topic : imageTopic
-//topic : '/camera/image_color'
-});
-
-var twist = new ROSLIB.Message({
-linear : {
-x : 0,
-y : 0,
-z : 0
-},
-angular : {
-x : 0,
-y : 0,
-z : 0
-}
-});
-
-cmdVel.publish(twist);
-
-loadTeleop();
-generateHTML();
-generateSizes();
-
-}
+        <div id="content">
 
 
-</script>
-
-</head>
-
-<body onload="init()">
-<script src="javascript/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<div class="tab-content">
-<div class="tab-pane active" id="lA">
-
-<div id="content">
+        <div id="container">
+        <table><tr>
+        <td height=0 width=0><div id="mjpeg"></div><span id="result"></span></td>
+        </tr></table>
 
 
-<div id="container">
-<table><tr>
-<td height=0 width=0><div id="mjpeg"></div><span id="result"></span></td>
-</tr></table>
+        </div>
+        </div>
+        </div>
 
+        <!-- Load the virtual joystick javascript file -->
+        <script src="virtualjoystick.js"></script>
 
-</div>
-</div>
-</div>
+        <!-- Load and handle the actual joysticks -->
+        <script>
+        function loadJoy(){
+            console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
+            // 
+            var joystick_left    = new VirtualJoystick({
+                container   : document.body,
+                strokeStyle : 'cyan',
+                limitStickTravel: true,
+                stickRadius : 120       
+            });
+            joystick_left.addEventListener('touchStartValidation', function(event){
+                var touch   = event.changedTouches[0];
+                if( touch.pageX > window.innerWidth/2 ) return false;
+                return true
+            });
+            // one on the right of the screen
+            var joystick_right    = new VirtualJoystick({
+                container   : document.body,
+                strokeStyle : 'orange',
+                limitStickTravel: true,
+                stickRadius : 120     
+            });
+            joystick_right.addEventListener('touchStartValidation', function(event){
+                var touch   = event.changedTouches[0];
+                if( touch.pageX <= window.innerWidth/2 )    return false;
+                return true
+            });
 
-<script src="virtualjoystick.js"></script>
-<script>
-function loadJoy(){
-  console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
-  joystick	= new VirtualJoystick({
-container	: document.getElementById('content'),
-mouseSupport	: true,
-ytrans		: -0.0
-});
-joystick.addEventListener('touchStart', function(){
-    console.log('down')
-    })
-joystick.addEventListener('touchEnd', function(){
-    console.log('up')
-    })
+            setInterval(
+                function()
+                {
+                    twistPublish(-joystick_left.deltaX()/window.innerHeight,-joystick_left.deltaY()/window.innerHeight,"left");
+                    twistPublish(-joystick_right.deltaX()/window.innerHeight,-joystick_right.deltaY()/window.innerHeight,"right");
+                }, 1/10 * 1000
+            );
+        }
 
-setInterval(function(){
-    twistPublish(-joystick.deltaX(),-joystick.deltaY(),joystick._baseX,joystick._baseY);
-    }, 1/10 * 1000);
-}
+        function destroyJoy(){
+            joystick_left.destroy();
+            joystick_right.destroy();
+        }
 
-function destroyJoy(){
-  joystick.destroy();
-}
-
-</script>
-</body>
+        </script>
+    </body>
 </html>
