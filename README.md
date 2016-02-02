@@ -46,6 +46,6 @@ usma_remote_interface
     * http://wiki.ros.org/ROS/Tutorials/MultipleMachines
     * http://wiki.ros.org/ROS/NetworkSetup
   
-10. To run teleop from your client machien, plug-in your joystick and execute:
+10. To run teleop from your client machine, plug-in your joystick and execute:
   * $ `roslaunch teleop_twist_joy teleop.launch`
   * You may need to remap twist message names
