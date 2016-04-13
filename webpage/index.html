@@ -139,25 +139,26 @@
                 name : sensorList[i],
                 messageType : 'std_msgs/Float64'
               });
-              subFuncs[i] = new Function('message','sensorSub(message, '+i+');');
+              subFuncs[i] = sensorSub.bind(null, i);
+
               listeners[i].subscribe( subFuncs[i] );
             }
             document.getElementById("sensor_listing").innerHTML = sensorHTML;
         }
       
-        function sensorSub(message) {
+        function sensorSub(ij, message) {
           console.log('arguments.length ' + arguments.length );
           for( i = 0; i < arguments.length; i++)
           {
               console.log( i + ':::' + arguments[i] );
           }
-          temp = document.getElementById(sensorList[arguments[1]]);
+          temp = document.getElementById(sensorList[ij]);
           cn = "list-group-item list-group-item-";
-          if( dangerMin[arguments[1]] <= message.data )
+          if( dangerMin[ij] <= message.data )
           {
             cn += "danger";
           }
-          else if( warningMin[arguments[1]] <= message.data )
+          else if( warningMin[ij] <= message.data )
           {
             cn += "warning";
           }
@@ -166,7 +167,7 @@
             cn += "success";
           }
           temp.className = cn;
-          temp.innerHTML= sensorList[arguments[1]] + "::" + Math.round(message.data*10)/10;
+          temp.innerHTML= sensorList[ij] + "::" + Math.round(message.data*10)/10;
         }
         
         </script>
