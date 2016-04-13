@@ -152,10 +152,22 @@
               console.log( i + ':::' + arguments[i] );
           }
           temp = document.getElementById(sensorList[arguments[1]]);
+          cn = "list-group-item list-group-item-";
+          if( dangerMin[arguments[1]] <= message.data )
+          {
+            cn += "danger";
+          }
+          else if( warningMin[arguments[1]] <= message.data )
+          {
+            cn += "warning";
+          }
+          else
+          {
+            cn += "success";
+          }
+          temp.className = cn;
           temp.innerHTML= sensorList[arguments[1]] + "::" + Math.round(message.data*10)/10;
         }
-
-
         
         </script>
         
