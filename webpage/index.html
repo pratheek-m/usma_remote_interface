@@ -66,75 +66,96 @@
         
         window.onresize = function(event) {
             generateHTML();
-            generateSizes();
         }
-        
-        
-        
+
         // regenerate html whenever something on the screen changes
         function generateHTML(){
+            mjpegEle = document.getElementById("mjpeg").getElementsByTagName("canvas")[0];
             cont = document.getElementById("content").getElementsByTagName("td");
-            width = document.getElementById("wd").offsetWidth;
+            width = document.body.offsetWidth;
         
-            if (width >= 1280)
+            if (width >= 740)
             {
                 cont[0].height=480;
                 cont[0].width=640;
                 cont[1].height=480;
-                cont[1].width=640;
+                cont[1].width=100;
+                mjpegEle.height=480;
+                mjpegEle.width=640;
             }
             else
             {
+                width = width - 100;
                 if(width>=640) {width=640;}
                 cont[0].height=width*2/3;
                 cont[0].width=width;
-                cont[1].height=0;
-                cont[1].width=0;
+
+                cont[1].height=480;
+                cont[1].width=100;
+
+                mjpegEle.height=width*2/3;
+                mjpegEle.width=width;
             }
         }
-        
-        // regenerate the smaller elements whenever something changes
-        function generateSizes(){
-            width = document.getElementById("wd").offsetWidth;
-            mjpegEle = document.getElementById("mjpeg").getElementsByTagName("canvas")[0];
-        
-            mjpegEle.height=width*2/3;
-            mjpegEle.width=width;
-        }
-        
-        
+
         // Functions to load assets
         function loadTeleop()
         {
             loadJoy();
             state = "teleop";
             generateHTML();
-            generateSizes();
         }
-        
-        // would like to set the image topic in a launch file
-        
-        // need to set up a general calibration file
         
         function init(){
             // Create the main viewer.
             camera_viewer = new MJPEGCANVAS.Viewer({
-            divID : 'mjpeg',
-            host : ip, 
-            width : 640,
-            height : 480,
-            quality: 10,
-            topic : imageTopic
-        });
+                divID : 'mjpeg',
+                host : ip, 
+                width : 640,
+                height : 480,
+                quality: 10,
+                topic : imageTopic
+            });
        
-        twistPublish(0.0,0.0,"");
-        
-        loadTeleop();
-        generateHTML();
-        generateSizes();
-        
+            twistPublish(0.0,0.0,"");
+            
+            loadTeleop();
+            generateHTML();
+
+            sensorHTML = "";
+            var listeners = [];
+            var subFuncs = [];
+
+            for (i = 0; i < sensorList.length; i++) {
+              sensorHTML += '<a href="#" id="';
+              sensorHTML += sensorList[i];
+              sensorHTML += '" class="list-group-item list-group-item-success">';
+              sensorHTML += sensorList[i];
+              sensorHTML += '</a>';
+
+
+              listeners[i] = new ROSLIB.Topic({
+                ros : ros,
+                name : sensorList[i],
+                messageType : 'std_msgs/Float64'
+              });
+              subFuncs[i] = new Function('message','sensorSub(message, '+i+');');
+              listeners[i].subscribe( subFuncs[i] );
+            }
+            document.getElementById("sensor_listing").innerHTML = sensorHTML;
         }
-        
+      
+        function sensorSub(message) {
+          console.log('arguments.length ' + arguments.length );
+          for( i = 0; i < arguments.length; i++)
+          {
+              console.log( i + ':::' + arguments[i] );
+          }
+          temp = document.getElementById(sensorList[arguments[1]]);
+          temp.innerHTML= sensorList[arguments[1]] + "::" + Math.round(message.data*10)/10;
+        }
+
+
         
         </script>
         
@@ -144,19 +165,24 @@
         <script src="javascript/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <div class="tab-content">
-        <div class="tab-pane active" id="lA">
+          <div class="tab-pane active" id="lA">
+            <div id="content">
+              <div id="container">
+                <table><tr>
+                  <td height=0 width=0>
+                    <div id="mjpeg"></div>
+                    <span id="result"></span>
+                  </td>
+                  <td height=120 width=30>
 
-        <div id="content">
+                    <div class="list-group" id="sensor_listing">
+                    </div>
 
-
-        <div id="container">
-        <table><tr>
-        <td height=0 width=0><div id="mjpeg"></div><span id="result"></span></td>
-        </tr></table>
-
-
-        </div>
-        </div>
+                  </td>
+                </tr></table>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Load the virtual joystick javascript file -->
@@ -168,7 +194,7 @@
             console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
             // 
             var joystick_left    = new VirtualJoystick({
-                container   : document.body,
+                container   : document.getElementById("mjpeg"),
                 strokeStyle : 'cyan',
                 limitStickTravel: true,
                 stickRadius : 120       
@@ -180,7 +206,7 @@
             });
             // one on the right of the screen
             var joystick_right    = new VirtualJoystick({
-                container   : document.body,
+                container   : document.getElementById("mjpeg"),
                 strokeStyle : 'orange',
                 limitStickTravel: true,
                 stickRadius : 120     
